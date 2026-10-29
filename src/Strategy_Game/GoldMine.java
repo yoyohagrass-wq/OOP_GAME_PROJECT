@@ -9,5 +9,5 @@ package Strategy_Game;
  * @author yoyoh
  */
 public class GoldMine extends Buildings {
-    
+    //hanekk ya midos
 }
