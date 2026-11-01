@@ -11,4 +11,5 @@ package Strategy_Game;
 public class GoldMine extends Buildings {
 //    3bdeed zengy neek
     // 3beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeed
+    // chatgpt zomboro keber
 }
