@@ -11,15 +11,17 @@ package Strategy_Game;
 public class Cavalry extends Unit {
 
     private final Horse horse;
+    public Sword SSowrd;
 
     // Constructor
     public Cavalry(int Health, int Damage, int id) {
         super(Health, Damage, id);
         this.horse = new Horse(50);
+        this.SSowrd = new Sword("Basic Sword",10);
     }
     @Override
     public int CalcDamage() {
-        return getDamage() + SSowrd.DamageBonus;
+        return getDamage() + SSowrd.getDamageBonus();
     }
     // Getter
     public Horse getHorse() {

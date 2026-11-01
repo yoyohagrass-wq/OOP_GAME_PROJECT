@@ -20,7 +20,7 @@ public class Legionary extends Unit {
         super(Health, Damage, id);
         setArmor(Armor);
         this.sword = new Sword("Great Sword", 20);
-        this.shield = new Shield("Heavy Shields", 20);
+        this.shield = new Shield("Heavy Shield", 20);
     }
 
     // Armor Setter
