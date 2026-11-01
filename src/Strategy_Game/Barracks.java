@@ -41,6 +41,26 @@ public class Barracks extends Buildings {
             cost = 200;
             newUnit = new Cavalry(200, 40, unitID);
         }
+
+        else if (unitType == Spearman.class) {
+            cost = 120;
+            newUnit = new Spearman(120, 25, unitID);
+        }
+
+        else if (unitType == Crossbowman.class) {
+            cost = 140;
+            newUnit = new Crossbowman(100, 25, unitID, 60);
+        }
+
+        else if (unitType == Longbowman.class) {
+            cost = 160;
+            newUnit = new Longbowman(100, 30, unitID, 80);
+        }
+
+        else if (unitType == Guardian.class) {
+            cost = 180;
+            newUnit = new Guardian(180, 25, unitID, 25);
+        }
         
         else if (unitType == Legionary.class) {
 
