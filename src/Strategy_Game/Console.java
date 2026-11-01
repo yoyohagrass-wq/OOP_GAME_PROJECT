@@ -14,12 +14,15 @@ public class Console {
 
     private Player player1;
     private Player player2;
+    private Game game;
     private int nextUnitID = 1;
+
     private Scanner scanner = new Scanner(System.in);
 
     public Console(Player player1, Player player2) {
         this.player1 = player1;
         this.player2 = player2;
+        this.game = new Game(player1, player2);
     }
 
     public void showMainMenu() {
@@ -30,7 +33,8 @@ public class Console {
         System.out.println("3. Collect Gold");
         System.out.println("4. Start Battle");
         System.out.println("5. View Buildings");
-        System.out.println("6. Exit");
+        System.out.println("6. Attack Building");
+        System.out.println("7. Exit");
         System.out.print("Choose an option: ");
     }
 
@@ -80,6 +84,10 @@ public class Console {
         System.out.println("4. Legionary - 175 Gold (Romans)");
         System.out.println("5. Berserker - 180 Gold (Vikings)");
         System.out.println("6. Chariot - 200 Gold (Egyptians)");
+        System.out.println("7. Spearman");
+        System.out.println("8. Crossbowman");
+        System.out.println("9. Longbowman");
+        System.out.println("10. Guardian");
         System.out.print("Choose unit: ");
 
         String choice = scanner.nextLine();
@@ -112,6 +120,22 @@ public class Console {
                 unitType = Chariot.class;
                 break;
 
+            case "7":
+                unitType = Spearman.class;
+                break;
+
+            case "8":
+                unitType = Crossbowman.class;
+                break;
+
+            case "9":
+                unitType = Longbowman.class;
+                break;
+
+            case "10":
+                unitType = Guardian.class;
+                break;
+
             default:
                 System.out.println("Invalid unit!");
                 return;
@@ -125,6 +149,7 @@ public class Console {
 
             System.out.println("Unit recruited successfully!");
             System.out.println("Remaining Gold: " + player.getGold());
+            System.out.println("Army Size: " + player.getArmy().getArmySize());
         }
         else {
             System.out.println("Recruitment failed!");
@@ -301,11 +326,115 @@ public class Console {
                 + player.getTownHall().getHealth() + " HP");
     }
 
+    public void attackBuilding() {
+
+        System.out.println("\n========== ATTACK BUILDING ==========");
+
+        Player attackingPlayer = choosePlayer();
+
+        if (attackingPlayer == null) {
+            return;
+        }
+
+        Player defendingPlayer;
+
+        if (attackingPlayer == player1) {
+            defendingPlayer = player2;
+        }
+        else {
+            defendingPlayer = player1;
+        }
+
+        if (attackingPlayer.getArmy().isDefeated()) {
+            System.out.println("You have no living soldiers!");
+            return;
+        }
+
+        System.out.println("\nChoose your attacking unit:");
+
+        Unit attacker = selectUnit(attackingPlayer.getArmy());
+
+        if (attacker == null) {
+            return;
+        }
+
+        System.out.println("\n========== ENEMY BUILDINGS ==========");
+
+        System.out.println("1. Barracks - "
+                + defendingPlayer.getBarracks().getHealth() + " HP");
+
+        System.out.println("2. GoldMine - "
+                + defendingPlayer.getGoldMine().getHealth() + " HP");
+
+        System.out.println("3. DefenseTower - "
+                + defendingPlayer.getDefenseTower().getHealth() + " HP");
+
+        System.out.println("4. TownHall - "
+                + defendingPlayer.getTownHall().getHealth() + " HP");
+
+        System.out.print("Choose building: ");
+
+        String choice = scanner.nextLine();
+
+        Buildings target;
+
+        switch (choice) {
+
+            case "1":
+                target = defendingPlayer.getBarracks();
+                break;
+
+            case "2":
+                target = defendingPlayer.getGoldMine();
+                break;
+
+            case "3":
+                target = defendingPlayer.getDefenseTower();
+                break;
+
+            case "4":
+                target = defendingPlayer.getTownHall();
+                break;
+
+            default:
+                System.out.println("Invalid building!");
+                return;
+        }
+
+        if (target.isDestroyed()) {
+            System.out.println("Building already destroyed!");
+            return;
+        }
+
+        int oldHealth = target.getHealth();
+
+        CombatSystem combat = new CombatSystem();
+
+        combat.performAttack(attacker, target);
+
+        int damage = oldHealth - target.getHealth();
+
+        System.out.println("\nAttack successful!");
+        System.out.println("Damage dealt: " + damage);
+        System.out.println("Building HP: " + target.getHealth());
+
+        if (target.isDestroyed()) {
+            System.out.println("Building destroyed!");
+        }
+
+        Player winner = game.getWinner();
+
+        if (winner != null) {
+            System.out.println("\nGAME OVER!");
+            System.out.println(winner.getName() + " WINS THE GAME!");
+        }
+    }
+
     public void startMenu() {
 
         String choice = "";
 
-        while (!choice.equals("6")) {
+        while (!choice.equals("7") && game.getWinner() == null) {
 
             showMainMenu();
 
@@ -336,6 +465,10 @@ public class Console {
                     break;
 
                 case "6":
+                    attackBuilding();
+                    break;
+
+                case "7":
                     System.out.println("Exiting Game...");
                     break;
 
