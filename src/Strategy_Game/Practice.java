@@ -4,6 +4,8 @@
  */
 package Strategy_Game;
 import java.util.ArrayList;
+import java.util.Scanner;
+
 /**
  *
  * @author yoyoh
@@ -99,12 +101,47 @@ System.out.println(player1.getGold());
 
 
 
+
+
+
+
 System.out.println(chariot1.chargeAttack());
 System.out.println(chariot1.chargeAttack());
-    
     
 
+
+
+System.out.println("Gold Before: " + player1.getGold());
+
+System.out.println("Wait 35 seconds, then press Enter...");
+
+Scanner scanner = new Scanner(System.in);
+scanner.nextLine();
+
+player1.getGoldMine().collectGold(player1);
+
+System.out.println("Gold After: " + player1.getGold());
        
        
+
+
+
+
+DefenseTower tower = new DefenseTower(1);
+Archer archer = new Archer(100, 20, 2, 50);
+
+System.out.println("Before: " + archer.getHealth());
+
+tower.attack(archer);
+
+System.out.println("After: " + archer.getHealth());
+
     }
 }
+
+
+
+
+
+
+

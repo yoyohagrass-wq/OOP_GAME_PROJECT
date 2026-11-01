@@ -17,6 +17,9 @@ public class Player {
     private final Army MyArmy;
     private Civilization civilization;
     private final Barracks barracks;
+    private final GoldMine goldMine;
+    private final DefenseTower defenseTower;
+    private final TownHall townHall;
 
     // Constructor
     public Player(int playerID, String Name, int Gold, Civilization selectedCivilization) {
@@ -26,6 +29,9 @@ public class Player {
         this.MyArmy = new Army();
         this.civilization = selectedCivilization;
         this.barracks = new Barracks(playerID);
+        this.goldMine = new GoldMine(playerID);
+        this.defenseTower = new DefenseTower(playerID);
+        this.townHall = new TownHall(playerID);
     }
 
     // Player ID Getter
@@ -78,5 +84,18 @@ public class Player {
         }
 
         return false;
+    }
+    
+    public GoldMine getGoldMine() {
+        return this.goldMine;
+    }
+    
+    public DefenseTower getDefenseTower() {
+        return this.defenseTower;
+    }
+    
+    
+    public TownHall getTownHall() {
+        return this.townHall;
     }
 }

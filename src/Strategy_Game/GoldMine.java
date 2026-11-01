@@ -20,5 +20,24 @@ public class GoldMine extends Buildings {
     }
     
     public void collectGold(Player player) {
+
+    if (isDestroyed()) {
+        return;
     }
+
+    long currentTime = System.currentTimeMillis();
+
+    long elapsedTime = currentTime - lastCollectionTime;
+
+    long intervals = elapsedTime / productionInterval;
+
+    if (intervals > 0) {
+
+        int gold = (int)(intervals * goldPerInterval);
+
+        player.addGold(gold);
+
+        lastCollectionTime += intervals * productionInterval;
+    }
+}
 }
