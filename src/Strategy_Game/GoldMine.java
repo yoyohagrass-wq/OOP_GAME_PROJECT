@@ -9,7 +9,16 @@ package Strategy_Game;
  * @author yoyoh
  */
 public class GoldMine extends Buildings {
-//    3bdeed zengy neek
-    // 3beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeed
-    // chatgpt zomboro keber
+
+    private final int goldPerInterval = 50;
+    private final long productionInterval = 30000;
+    private long lastCollectionTime;
+
+    public GoldMine(int buildingID) {
+        super(buildingID, 300);
+        this.lastCollectionTime = System.currentTimeMillis();
+    }
+    
+    public void collectGold(Player player) {
+    }
 }
