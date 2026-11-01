@@ -17,6 +17,7 @@ public class Player {
     private final Army MyArmy;
     private Civilization civilization;
     private final Barracks barracks;
+    private final GoldMine goldMine;
 
     // Constructor
     public Player(int playerID, String Name, int Gold, Civilization selectedCivilization) {
@@ -26,6 +27,7 @@ public class Player {
         this.MyArmy = new Army();
         this.civilization = selectedCivilization;
         this.barracks = new Barracks(playerID);
+        this.goldMine = new GoldMine(playerID);
     }
 
     // Player ID Getter
@@ -78,5 +80,9 @@ public class Player {
         }
 
         return false;
+    }
+    
+    public GoldMine getGoldMine() {
+    return this.goldMine;
     }
 }
