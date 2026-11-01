@@ -10,4 +10,5 @@ package Strategy_Game;
  */
 public class GoldMine extends Buildings {
 //    3bdeed zengy neek
+    //ysta zabat wla lesa
 }
