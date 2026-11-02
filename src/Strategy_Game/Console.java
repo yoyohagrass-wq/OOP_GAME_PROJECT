@@ -15,18 +15,19 @@ public class Console {
     private Player player1;
     private Player player2;
     private Game game;
+    private final GameMap gameMap = new GameMap();
+    private CounterSystem counterSystem = new CounterSystem();
+    private final CombatSystem combat = new CombatSystem();
+    private static final Scanner scanner = new Scanner(System.in);
     private int nextUnitID = 1;
-
-    private Scanner scanner = new Scanner(System.in);
 
     public Console(Player player1, Player player2) {
         this.player1 = player1;
         this.player2 = player2;
-        this.game = new Game(player1, player2);
+        game = new Game(player1, player2);
     }
 
     public void showMainMenu() {
-
         System.out.println("\n========== STRATEGY GAME ==========");
         System.out.println("1. View Player Information");
         System.out.println("2. Recruit Units");
@@ -34,27 +35,18 @@ public class Console {
         System.out.println("4. Start Battle");
         System.out.println("5. View Buildings");
         System.out.println("6. Attack Building");
-        System.out.println("7. Exit");
+        System.out.println("7. View Map");
+        System.out.println("8. View Statistics");
+        System.out.println("9. Save Player");
+        System.out.println("10. Load Player");
+        System.out.println("11. Delete Save");
+        System.out.println("12. Exit");
         System.out.print("Choose an option: ");
     }
 
-    public void showPlayerInformation(Player player) {
-
-        System.out.println("\n========== PLAYER INFORMATION ==========");
-        System.out.println("Name: " + player.getName());
-        System.out.println("Civilization: " + player.getCivilization().getName());
-        System.out.println("Gold: " + player.getGold());
-        System.out.println("Army Size: " + player.getArmy().getArmySize());
-        System.out.println("Matches Played: " + player.getGamesPlayed());
-        System.out.println("Wins: " + player.getWins());
-        System.out.println("Losses: " + player.getLosses());
-        System.out.printf("Win Rate: %.2f%%%n", player.getWinRate());
-    }
-
     public Player choosePlayer() {
-
-        System.out.println("1. Player 1");
-        System.out.println("2. Player 2");
+        System.out.println("1. " + player1.getName());
+        System.out.println("2. " + player2.getName());
         System.out.print("Choose player: ");
 
         String choice = scanner.nextLine();
@@ -62,7 +54,8 @@ public class Console {
         if (choice.equals("1")) {
             return player1;
         }
-        else if (choice.equals("2")) {
+
+        if (choice.equals("2")) {
             return player2;
         }
 
@@ -70,8 +63,14 @@ public class Console {
         return null;
     }
 
-    public void recruitUnits() {
+    public void showPlayerInformation(Player player) {
+        System.out.println("\n========== " + player.getName() + " ==========");
+        System.out.println("Civilization: " + player.getCivilization().getName());
+        System.out.println("Gold: " + player.getGold());
+        System.out.println("Army Size: " + player.getArmy().getArmySize());
+    }
 
+    public void recruitUnits() {
         System.out.println("\n========== RECRUIT UNITS ==========");
 
         Player player = choosePlayer();
@@ -82,7 +81,7 @@ public class Console {
 
         System.out.println("Gold: " + player.getGold());
 
-        System.out.println("\n1. Archer - 100 Gold");
+        System.out.println("1. Archer - 100 Gold");
         System.out.println("2. Knight - 150 Gold");
         System.out.println("3. Cavalry - 200 Gold");
         System.out.println("4. Legionary - 175 Gold (Romans)");
@@ -92,14 +91,12 @@ public class Console {
         System.out.println("8. Crossbowman");
         System.out.println("9. Longbowman");
         System.out.println("10. Guardian");
-        System.out.print("Choose unit: ");
 
-        String choice = scanner.nextLine();
+        System.out.print("Choose unit: ");
 
         Class<? extends Unit> unitType;
 
-        switch (choice) {
-
+        switch (scanner.nextLine()) {
             case "1":
                 unitType = Archer.class;
                 break;
@@ -146,22 +143,19 @@ public class Console {
         }
 
         boolean recruited = player.getBarracks().recruitUnit(
-                player, unitType, nextUnitID);
+                player, unitType, nextUnitID
+        );
 
         if (recruited) {
             nextUnitID++;
-
-            System.out.println("Unit recruited successfully!");
+            System.out.println("Unit recruited!");
             System.out.println("Remaining Gold: " + player.getGold());
-            System.out.println("Army Size: " + player.getArmy().getArmySize());
-        }
-        else {
+        } else {
             System.out.println("Recruitment failed!");
         }
     }
 
     public void collectGold() {
-
         System.out.println("\n========== COLLECT GOLD ==========");
 
         Player player = choosePlayer();
@@ -170,20 +164,18 @@ public class Console {
             return;
         }
 
-        int goldBefore = player.getGold();
+        int before = player.getGold();
 
         player.getGoldMine().collectGold(player);
 
-        int goldCollected = player.getGold() - goldBefore;
+        System.out.println("Gold collected: "
+                + (player.getGold() - before));
 
-        System.out.println("Gold Collected: " + goldCollected);
-        System.out.println("Total Gold: " + player.getGold());
+        System.out.println("Total gold: " + player.getGold());
     }
 
     public Unit selectUnit(Army army) {
-
         while (true) {
-
             System.out.println("\n========== SELECT UNIT ==========");
 
             for (int i = 0; i < army.getUnits().size(); i++) {
@@ -200,7 +192,6 @@ public class Console {
             System.out.print("Choose unit (0 to cancel): ");
 
             try {
-
                 int choice = Integer.parseInt(scanner.nextLine());
 
                 if (choice == 0) {
@@ -216,23 +207,20 @@ public class Console {
                     }
                 }
 
-            }
-            catch (NumberFormatException e) {
-                System.out.println("Please enter a number!");
-                continue;
-            }
+                System.out.println("Invalid unit!");
 
-            System.out.println("Invalid unit!");
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a number!");
+            }
         }
     }
 
     public void startBattle() {
-
         Army army1 = player1.getArmy();
         Army army2 = player2.getArmy();
 
         if (army1.isDefeated() || army2.isDefeated()) {
-            System.out.println("Both players need soldiers!");
+            System.out.println("Both players need living soldiers!");
             return;
         }
 
@@ -242,80 +230,73 @@ public class Console {
 
         while (battle.getWinner() == null) {
 
-            Player attackerPlayer;
-            Player defenderPlayer;
+            Player attacking;
+            Player defending;
 
             if (battle.getCurrentTurn() == 1) {
-                attackerPlayer = player1;
-                defenderPlayer = player2;
-            }
-            else {
-                attackerPlayer = player2;
-                defenderPlayer = player1;
+                attacking = player1;
+                defending = player2;
+            } else {
+                attacking = player2;
+                defending = player1;
             }
 
-            System.out.println("\n" + attackerPlayer.getName() + "'s Turn");
+            System.out.println("\n" + attacking.getName() + "'s Turn");
 
             System.out.println("Choose attacker:");
-            Unit attacker = selectUnit(attackerPlayer.getArmy());
+            Unit attacker = selectUnit(attacking.getArmy());
 
             if (attacker == null) {
-                System.out.println("Battle cancelled!");
                 return;
             }
 
             System.out.println("Choose target:");
-            Unit target = selectUnit(defenderPlayer.getArmy());
+            Unit target = selectUnit(defending.getArmy());
 
             if (target == null) {
-                System.out.println("Battle cancelled!");
                 return;
             }
 
             boolean useCharge = false;
 
             if (attacker instanceof Chariot) {
-
                 System.out.print("Use Charge? (y/n): ");
-
-                if (scanner.nextLine().equalsIgnoreCase("y")) {
-                    useCharge = true;
-                }
+                useCharge = scanner.nextLine().equalsIgnoreCase("y");
             }
 
-            int oldHealth = target.getHealth();
+            int before = target.getHealth();
 
-            boolean success = battle.takeTurn(attacker, target, useCharge);
+            boolean success = battle.takeTurn(
+                    attacker, target, useCharge
+            );
 
             if (success) {
-
                 System.out.println("Damage: "
-                        + (oldHealth - target.getHealth()));
+                        + (before - target.getHealth()));
 
                 System.out.println("Enemy HP: " + target.getHealth());
-
-                if (target.isDestroyed()) {
-                    System.out.println("Enemy unit destroyed!");
-                }
-            }
-            else {
+            } else {
                 System.out.println("Attack failed!");
             }
         }
 
-        Army winner = battle.getWinner();
+        Player winner;
 
-        if (winner == army1) {
-            System.out.println("\n" + player1.getName() + " wins the battle!");
+        if (battle.getWinner() == army1) {
+            winner = player1;
+        } else {
+            winner = player2;
         }
-        else {
-            System.out.println("\n" + player2.getName() + " wins the battle!");
-        }
+
+        counterSystem.recordBattle(winner, player1, player2);
+
+        System.out.println("\n" + winner.getName()
+                + " wins the battle!");
     }
 
     public void showBuildings(Player player) {
-
-        System.out.println("\n========== " + player.getName() + "'s BUILDINGS ==========");
+        System.out.println("\n========== "
+                + player.getName() + "'s BUILDINGS ==========");
 
         System.out.println("Barracks: "
                 + player.getBarracks().getHealth() + " HP");
@@ -331,73 +312,64 @@ public class Console {
     }
 
     public void attackBuilding() {
-
         System.out.println("\n========== ATTACK BUILDING ==========");
 
-        Player attackingPlayer = choosePlayer();
+        Player attacking = choosePlayer();
 
-        if (attackingPlayer == null) {
+        if (attacking == null) {
             return;
         }
 
-        Player defendingPlayer;
+        Player defending;
 
-        if (attackingPlayer == player1) {
-            defendingPlayer = player2;
-        }
-        else {
-            defendingPlayer = player1;
+        if (attacking == player1) {
+            defending = player2;
+        } else {
+            defending = player1;
         }
 
-        if (attackingPlayer.getArmy().isDefeated()) {
+        if (attacking.getArmy().isDefeated()) {
             System.out.println("You have no living soldiers!");
             return;
         }
 
-        System.out.println("\nChoose your attacking unit:");
-
-        Unit attacker = selectUnit(attackingPlayer.getArmy());
+        Unit attacker = selectUnit(attacking.getArmy());
 
         if (attacker == null) {
             return;
         }
 
-        System.out.println("\n========== ENEMY BUILDINGS ==========");
-
         System.out.println("1. Barracks - "
-                + defendingPlayer.getBarracks().getHealth() + " HP");
+                + defending.getBarracks().getHealth() + " HP");
 
         System.out.println("2. GoldMine - "
-                + defendingPlayer.getGoldMine().getHealth() + " HP");
+                + defending.getGoldMine().getHealth() + " HP");
 
         System.out.println("3. DefenseTower - "
-                + defendingPlayer.getDefenseTower().getHealth() + " HP");
+                + defending.getDefenseTower().getHealth() + " HP");
 
         System.out.println("4. TownHall - "
-                + defendingPlayer.getTownHall().getHealth() + " HP");
+                + defending.getTownHall().getHealth() + " HP");
 
-        System.out.print("Choose building: ");
-
-        String choice = scanner.nextLine();
+        System.out.print("Choose enemy building: ");
 
         Buildings target;
 
-        switch (choice) {
-
+        switch (scanner.nextLine()) {
             case "1":
-                target = defendingPlayer.getBarracks();
+                target = defending.getBarracks();
                 break;
 
             case "2":
-                target = defendingPlayer.getGoldMine();
+                target = defending.getGoldMine();
                 break;
 
             case "3":
-                target = defendingPlayer.getDefenseTower();
+                target = defending.getDefenseTower();
                 break;
 
             case "4":
-                target = defendingPlayer.getTownHall();
+                target = defending.getTownHall();
                 break;
 
             default:
@@ -410,16 +382,13 @@ public class Console {
             return;
         }
 
-        int oldHealth = target.getHealth();
-
-        CombatSystem combat = new CombatSystem();
+        int before = target.getHealth();
 
         combat.performAttack(attacker, target);
 
-        int damage = oldHealth - target.getHealth();
+        System.out.println("Damage: "
+                + (before - target.getHealth()));
 
-        System.out.println("\nAttack successful!");
-        System.out.println("Damage dealt: " + damage);
         System.out.println("Building HP: " + target.getHealth());
 
         if (target.isDestroyed()) {
@@ -429,23 +398,164 @@ public class Console {
         Player winner = game.getWinner();
 
         if (winner != null) {
+
+            winner.recordWin();
+
+            if (winner == player1) {
+                player2.recordLoss();
+            } else {
+                player1.recordLoss();
+            }
+
             System.out.println("\nGAME OVER!");
-            System.out.println(winner.getName() + " WINS THE GAME!");
+            System.out.println(winner.getName() + " wins!");
+
+            boolean saved1 = SaveManager.savePlayer(
+                    player1, "player1.txt"
+            );
+
+            boolean saved2 = SaveManager.savePlayer(
+                    player2, "player2.txt"
+            );
+
+            if (saved1 && saved2) {
+                System.out.println("Player results saved.");
+            } else {
+                System.out.println("Could not save all player results.");
+            }
+        }
+    }
+
+    public void showMap() {
+        System.out.println("\n========== GAME MAP ==========");
+
+        for (int row = 0; row < gameMap.getSize(); row++) {
+
+            for (int col = 0; col < gameMap.getSize(); col++) {
+
+                System.out.print("[ "
+                        + gameMap.getCell(row, col) + " ] ");
+            }
+
+            System.out.println();
+        }
+
+        System.out.println("1 = " + player1.getName() + "'s Base");
+        System.out.println("2 = " + player2.getName() + "'s Base");
+        System.out.println("X = Battlefield");
+        System.out.println(". = Empty Land");
+    }
+
+    public void showStatistics() {
+        System.out.println("\n========== STATISTICS ==========");
+
+        System.out.println(player1.getName()
+                + " - Games: " + player1.getGamesPlayed()
+                + ", Wins: " + player1.getWins()
+                + ", Losses: " + player1.getLosses());
+
+        System.out.println(player2.getName()
+                + " - Games: " + player2.getGamesPlayed()
+                + ", Wins: " + player2.getWins()
+                + ", Losses: " + player2.getLosses());
+
+        System.out.println("\nCompleted army battles: "
+                + counterSystem.getBattlesPlayed());
+
+        System.out.println(player1.getName()
+                + " - Battle Wins: " + counterSystem.getPlayer1Wins()
+                + ", Battle Losses: " + counterSystem.getPlayer1Losses()
+                + ", Survivors: "
+                + counterSystem.getSurvivingUnits(player1.getArmy()));
+
+        System.out.println(player2.getName()
+                + " - Battle Wins: " + counterSystem.getPlayer2Wins()
+                + ", Battle Losses: " + counterSystem.getPlayer2Losses()
+                + ", Survivors: "
+                + counterSystem.getSurvivingUnits(player2.getArmy()));
+    }
+
+    public String saveFile(Player player) {
+        if (player == player1) {
+            return "player1.txt";
+        }
+
+        return "player2.txt";
+    }
+
+    public void savePlayer() {
+        Player player = choosePlayer();
+
+        if (player == null) {
+            return;
+        }
+
+        boolean saved = SaveManager.savePlayer(
+                player, saveFile(player)
+        );
+
+        if (saved) {
+            System.out.println("Player saved!");
+        } else {
+            System.out.println("Could not save player.");
+        }
+    }
+
+    public void loadPlayer() {
+        Player player = choosePlayer();
+
+        if (player == null) {
+            return;
+        }
+
+        Player loaded = LoadManager.loadPlayer(saveFile(player));
+
+        if (loaded == null) {
+            System.out.println("Save file missing or invalid.");
+            return;
+        }
+
+        if (player == player1) {
+            player1 = loaded;
+        } else {
+            player2 = loaded;
+        }
+
+        game = new Game(player1, player2);
+        counterSystem = new CounterSystem();
+
+        System.out.println("Player loaded!");
+        System.out.println("Army and buildings start fresh.");
+    }
+
+    public void deleteSave() {
+        Player player = choosePlayer();
+
+        if (player == null) {
+            return;
+        }
+
+        boolean deleted = SaveManager.deleteSave(
+                saveFile(player)
+        );
+
+        if (deleted) {
+            System.out.println("Save deleted!");
+        } else {
+            System.out.println("No save deleted.");
         }
     }
 
     public void startMenu() {
-
         String choice = "";
 
-        while (!choice.equals("7") && game.getWinner() == null) {
+        while (!choice.equals("12") && game.getWinner() == null) {
 
             showMainMenu();
 
             choice = scanner.nextLine();
 
             switch (choice) {
-
                 case "1":
                     showPlayerInformation(player1);
                     showPlayerInformation(player2);
@@ -473,6 +583,26 @@ public class Console {
                     break;
 
                 case "7":
+                    showMap();
+                    break;
+
+                case "8":
+                    showStatistics();
+                    break;
+
+                case "9":
+                    savePlayer();
+                    break;
+
+                case "10":
+                    loadPlayer();
+                    break;
+
+                case "11":
+                    deleteSave();
+                    break;
+
+                case "12":
                     System.out.println("Exiting Game...");
                     break;
 
@@ -482,16 +612,72 @@ public class Console {
         }
     }
 
+    private static Civilization chooseCivilization(String name) {
+        while (true) {
+            System.out.println("\n" + name
+                    + ", choose your civilization:");
+
+            System.out.println("1. Romans");
+            System.out.println("2. Vikings");
+            System.out.println("3. Egyptians");
+            System.out.print("Choose: ");
+
+            switch (scanner.nextLine()) {
+                case "1":
+                    return new Civilization("Romans");
+
+                case "2":
+                    return new Civilization("Vikings");
+
+                case "3":
+                    return new Civilization("Egyptians");
+
+                default:
+                    System.out.println("Invalid choice!");
+            }
+        }
+    }
+
     public static void main(String[] args) {
+        System.out.println("========== NEW GAME ==========");
 
-        Civilization romans = new Civilization("Romans");
-        Civilization vikings = new Civilization("Vikings");
+        System.out.print("Enter Player 1 name: ");
+        String name1 = scanner.nextLine().trim();
 
-        Player player1 = new Player(1, "Player 1", 500, romans);
-        Player player2 = new Player(2, "Player 2", 500, vikings);
+        if (name1.isEmpty()) {
+            name1 = "Player 1";
+        }
+
+        Civilization civilization1 = chooseCivilization(name1);
+
+        System.out.print("\nEnter Player 2 name: ");
+        String name2 = scanner.nextLine().trim();
+
+        if (name2.isEmpty()) {
+            name2 = "Player 2";
+        }
+
+        Civilization civilization2 = chooseCivilization(name2);
+
+        Player player1 = new Player(
+                1, name1, 500, civilization1
+        );
+
+        Player player2 = new Player(
+                2, name2, 500, civilization2
+        );
+
+        System.out.println("\n========== GAME STARTED ==========");
+
+        System.out.println(name1 + " - "
+                + civilization1.getName());
+
+        System.out.println(name2 + " - "
+                + civilization2.getName());
+
+        System.out.println("Starting Gold: 500 each");
 
         Console ui = new Console(player1, player2);
-
         ui.startMenu();
     }
 }

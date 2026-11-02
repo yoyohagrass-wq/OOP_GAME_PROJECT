@@ -7,48 +7,52 @@ import java.util.Scanner;
 /**
  * Loads civilization and player match statistics from a save file.
  */
-public final class LoadManager {
 
-    private static final char SEPARATOR = '~';
+public final class LoadManager {
 
     private LoadManager() {
     }
 
     public static Player loadPlayer(String fileName) {
+
         try (Scanner scanner = new Scanner(new File(fileName))) {
+
             if (!scanner.hasNextLine()) {
-                System.out.println("Save file is empty.");
                 return null;
             }
 
-            String[] data = Helper.Tokenizer(scanner.nextLine(), SEPARATOR);
+            String[] data = Helper.Tokenizer(scanner.nextLine(), '~');
 
-            if (data.length < 6 || !data[0].equals("PLAYER")) {
-                System.out.println("Invalid save file.");
+            if (data.length != 8 || !data[0].equals("PLAYER")) {
                 return null;
             }
 
-            String civilizationName = data[1];
-            int gamesPlayed = Integer.parseInt(data[2]);
-            int wins = Integer.parseInt(data[3]);
-            int losses = Integer.parseInt(data[4]);
-            int gold = Integer.parseInt(data[5]);
+            int id = Integer.parseInt(data[1]);
+            String name = data[2];
+            String civilizationName = data[3];
+            int gamesPlayed = Integer.parseInt(data[4]);
+            int wins = Integer.parseInt(data[5]);
+            int losses = Integer.parseInt(data[6]);
+            int gold = Integer.parseInt(data[7]);
 
-            // ID and name are not saved, so the loaded player receives defaults.
+            if (id <= 0 || name.isEmpty() || civilizationName.isEmpty()
+                    || gold < 0 || gamesPlayed < 0 || wins < 0 || losses < 0
+                    || wins + losses > gamesPlayed) {
+                return null;
+            }
+
             Player player = new Player(
-                    1,
-                    "Loaded Player",
+                    id,
+                    name,
                     gold,
-                    new Civilization(civilizationName));
+                    new Civilization(civilizationName)
+            );
 
             player.restoreCounters(gamesPlayed, wins, losses);
-            System.out.println("Player statistics loaded.");
+
             return player;
-        } catch (FileNotFoundException e) {
-            System.out.println("Error loading player: save file was not found.");
-            return null;
-        } catch (NumberFormatException e) {
-            System.out.println("Error loading player: statistics or gold is invalid.");
+
+        } catch (FileNotFoundException | NumberFormatException e) {
             return null;
         }
     }
