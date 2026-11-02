@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 /**
- * Loads civilization, wins, and gold from a save file.
+ * Loads civilization and player match statistics from a save file.
  */
 public final class LoadManager {
 
@@ -23,14 +23,16 @@ public final class LoadManager {
 
             String[] data = Helper.Tokenizer(scanner.nextLine(), SEPARATOR);
 
-            if (data.length < 4 || !data[0].equals("PLAYER")) {
+            if (data.length < 6 || !data[0].equals("PLAYER")) {
                 System.out.println("Invalid save file.");
                 return null;
             }
 
             String civilizationName = data[1];
-            int wins = Integer.parseInt(data[2]);
-            int gold = Integer.parseInt(data[3]);
+            int gamesPlayed = Integer.parseInt(data[2]);
+            int wins = Integer.parseInt(data[3]);
+            int losses = Integer.parseInt(data[4]);
+            int gold = Integer.parseInt(data[5]);
 
             // ID and name are not saved, so the loaded player receives defaults.
             Player player = new Player(
@@ -39,14 +41,14 @@ public final class LoadManager {
                     gold,
                     new Civilization(civilizationName));
 
-            player.restoreCounters(wins, wins, 0);
-            System.out.println("Civilization, wins, and gold loaded.");
+            player.restoreCounters(gamesPlayed, wins, losses);
+            System.out.println("Player statistics loaded.");
             return player;
         } catch (FileNotFoundException e) {
             System.out.println("Error loading player: save file was not found.");
             return null;
         } catch (NumberFormatException e) {
-            System.out.println("Error loading player: wins or gold is invalid.");
+            System.out.println("Error loading player: statistics or gold is invalid.");
             return null;
         }
     }

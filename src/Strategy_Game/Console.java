@@ -45,6 +45,10 @@ public class Console {
         System.out.println("Civilization: " + player.getCivilization().getName());
         System.out.println("Gold: " + player.getGold());
         System.out.println("Army Size: " + player.getArmy().getArmySize());
+        System.out.println("Matches Played: " + player.getGamesPlayed());
+        System.out.println("Wins: " + player.getWins());
+        System.out.println("Losses: " + player.getLosses());
+        System.out.printf("Win Rate: %.2f%%%n", player.getWinRate());
     }
 
     public Player choosePlayer() {
