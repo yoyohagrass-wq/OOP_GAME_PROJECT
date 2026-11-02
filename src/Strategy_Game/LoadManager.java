@@ -14,8 +14,7 @@ public final class LoadManager {
     private LoadManager() {
     }
 
-    public static Player loadPlayer(String fileName)
-            throws FileNotFoundException {
+    public static Player loadPlayer(String fileName) {
         try (Scanner scanner = new Scanner(new File(fileName))) {
             if (!scanner.hasNextLine()) {
                 throw new IllegalArgumentException("Save file is empty");
@@ -62,6 +61,15 @@ public final class LoadManager {
             }
 
             return player;
+        } catch (FileNotFoundException e) {
+            System.out.println("Error loading player: save file was not found.");
+            return null;
+        } catch (NumberFormatException e) {
+            System.out.println("Error loading player: a number in the save file is invalid.");
+            return null;
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error loading player: " + e.getMessage());
+            return null;
         }
     }
 
