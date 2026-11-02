@@ -14,18 +14,22 @@ public class Player {
     private final int playerID;
     private String Name;
     private int Gold;
+    private int wins;
     private final Army MyArmy;
     private Civilization civilization;
     private final Barracks barracks;
+    private final GoldMine goldMine;
 
     // Constructor
     public Player(int playerID, String Name, int Gold, Civilization selectedCivilization) {
         this.Name = Name;
         this.Gold = Gold;
+        this.wins = 0;
         this.playerID = playerID;
         this.MyArmy = new Army();
         this.civilization = selectedCivilization;
         this.barracks = new Barracks(playerID);
+        this.goldMine = new GoldMine(playerID);
     }
 
     // Player ID Getter
@@ -58,9 +62,29 @@ public class Player {
         return this.civilization;
     }
 
+    public GoldMine getGoldMine() {
+        return this.goldMine;
+    }
+
     // Gold Getter
     public int getGold() {
         return this.Gold;
+    }
+
+    // Win counter
+    public int getWins() {
+        return this.wins;
+    }
+
+    public void recordWin() {
+        this.wins++;
+    }
+
+    // Used by LoadManager when restoring a saved player.
+    void restoreWins(int wins) {
+        if (wins >= 0) {
+            this.wins = wins;
+        }
     }
 
     // Add Gold

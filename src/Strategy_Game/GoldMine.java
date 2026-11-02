@@ -9,7 +9,6 @@ package Strategy_Game;
  * @author yoyoh
  */
 public class GoldMine extends Buildings {
-
     private final int goldPerInterval = 50;
     private final long productionInterval = 30000;
     private long lastCollectionTime;
@@ -20,5 +19,17 @@ public class GoldMine extends Buildings {
     }
     
     public void collectGold(Player player) {
+        if (player == null || isDestroyed()) {
+            return;
+        }
+
+        long currentTime = System.currentTimeMillis();
+        long elapsedTime = currentTime - lastCollectionTime;
+
+        if (elapsedTime >= productionInterval) {
+            long intervals = elapsedTime / productionInterval;
+            player.addGold((int) (intervals * goldPerInterval));
+            lastCollectionTime += intervals * productionInterval;
+        }
     }
 }

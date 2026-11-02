@@ -1,0 +1,662 @@
+@startuml Strategy_Game_80_Class_Diagram
+
+title Strategy Game - 80-Class UML Design
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam packageStyle rectangle
+skinparam nodesep 18
+skinparam ranksep 22
+
+legend right
+  <b>Existing</b>: classes currently in the Java project
+  <b>Planned</b>: diagram-only architecture extensions
+  Total: 25 existing + 55 planned = 80 classes/types
+endlegend
+
+package "Existing Java Classes" {
+  interface IMoveSet {
+    +attack(): void
+  }
+  interface Damageable {
+    +takeDamage(damage: int): void
+    +getHealth(): int
+    +isDestroyed(): boolean
+  }
+  abstract class Unit {
+    -Health: int
+    -Damage: int
+    -id: int
+    -maxHealth: int
+    +setHealth(Health: int): void
+    +getHealth(): int
+    +getMaxHealth(): int
+    +setDamage(Damage: int): void
+    +getDamage(): int
+    +setId(id: int): void
+    +getId(): int
+    +CalcDamage(): int
+    +takeDamage(damage: int): void
+    +isDestroyed(): boolean
+  }
+  abstract class Buildings {
+    -buildingID: int
+    -health: int
+    -maxHealth: int
+    +getBuildingID(): int
+    +getHealth(): int
+    +getMaxHealth(): int
+    +takeDamage(damage: int): void
+    +isDestroyed(): boolean
+  }
+
+  class Archer {
+    -Range: int
+    +BowNArrow: Bow
+    +setBow(NewBow: Bow): void
+    +setRange(Range: int): void
+    +getRange(): int
+    +CalcDamage(): int
+    +attack(): void
+    +useBow(bow: Bow): void
+  }
+  class soldier {
+    -Armor: int
+    +SSowrd: Sword
+    +setArmor(Armor: int): void
+    +getArmor(): int
+    +CalcDamage(): int
+    +attack(): void
+  }
+  class Knight {
+    -Armor: int
+    +SSowrd: Sword
+    +Shield: Shield
+    +setArmor(Armor: int): void
+    +getArmor(): int
+    +CalcDamage(): int
+    +CalcArmor(): int
+    +takeDamage(damage: int): void
+    +attack(): void
+  }
+  class Legionary {
+    -Armor: int
+    -sword: Sword
+    -shield: Shield
+    +setArmor(Armor: int): void
+    +getArmor(): int
+    +getSword(): Sword
+    +getShield(): Shield
+    +CalcDamage(): int
+    +CalcArmor(): int
+    +takeDamage(damage: int): void
+    +attack(): void
+  }
+  class Berserker {
+    -axe: Axe
+    +getAxe(): Axe
+    +CalcDamage(): int
+    +attack(): void
+  }
+  class Cavalry {
+    -horse: Horse
+    +getHorse(): Horse
+    +CalcDamage(): int
+    +attack(): void
+  }
+  class Chariot {
+    -spear: Spear
+    -chargeBonus: int
+    -chargeAvailable: boolean
+    +getSpear(): Spear
+    +CalcDamage(): int
+    +CalcChargeDamage(): int
+    +chargeAttack(): int
+    +resetCharge(): void
+    +attack(): void
+  }
+
+  class Sword {
+    -SwordName: String
+    -DamageBonus: int
+    +getDamageBonus(): int
+    +getSwordName(): String
+  }
+  class Bow {
+    -Bowname: String
+    -DamageBonus: int
+    +getDamageBonus(): int
+    +getBowname(): String
+  }
+  class Axe {
+    -AxeName: String
+    -DamageBonus: int
+    +getDamageBonus(): int
+    +getAxeName(): String
+  }
+  class Spear {
+    -SpearName: String
+    -DamageBonus: int
+    +getDamageBonus(): int
+    +getSpearName(): String
+  }
+  class Shield {
+    +ShieldName: String
+    +ArmorBonus: int
+    +getArmorBonus(): int
+    +getShieldName(): String
+  }
+  class Horse {
+    -Speed: int
+    +setSpeed(Speed: int): void
+    +getSpeed(): int
+  }
+
+  class Army {
+    -units: ArrayList~Unit~
+    +addUnit(unit: Unit): void
+    +getArmySize(): int
+    +removeUnit(unitType: Class): boolean
+    +getTotalDamage(): int
+    +isDefeated(): boolean
+    +getUnits(): ArrayList~Unit~
+  }
+  class Player {
+    -playerID: int
+    -Name: String
+    -Gold: int
+    -MyArmy: Army
+    -civilization: Civilization
+    -barracks: Barracks
+    +getPlayerID(): int
+    +getName(): String
+    +setName(Name: String): void
+    +getArmy(): Army
+    +getBarracks(): Barracks
+    +getCivilization(): Civilization
+    +getGold(): int
+    +addGold(goldAmount: int): void
+    +spendGold(Amount: int): boolean
+  }
+  class Civilization {
+    -name: String
+    +getName(): String
+  }
+  class Barracks {
+    +canRecruit(): boolean
+    +recruitUnit(player: Player, unitType: Class, unitID: int): boolean
+  }
+  class GoldMine {
+    ' No methods currently exist in the source.
+  }
+  class CombatSystem {
+    +performAttack(attacker: Unit, target: Damageable): void
+    +performChargeAttack(attacker: Chariot, target: Damageable): void
+    +getWinner(army1: Army, army2: Army): Army
+  }
+  class Battle {
+    -battleArmy1: Army
+    -battleArmy2: Army
+    -currentTurn: int
+    +getCurrentTurn(): int
+    +switchTurn(): void
+  }
+  class Practice {
+    +main(args: String[]): void
+  }
+}
+
+package "Planned Game Flow" <<planned>> {
+  class GameEngine <<planned>> {
+    -state: GameState
+    -session: GameSession
+    +start(): void
+    +update(): void
+    +stop(): void
+  }
+  class GameState <<planned>> {
+    -players: List~Player~
+    -map: Map
+    -turn: Turn
+    +getPlayers(): List~Player~
+    +isGameOver(): boolean
+  }
+  class GameConfig <<planned>> {
+    -maxPlayers: int
+    -startingGold: int
+    +loadDefaults(): void
+    +validate(): boolean
+  }
+  class GameSession <<planned>> {
+    -sessionId: String
+    -state: GameState
+    +create(): void
+    +join(player: Player): boolean
+    +end(): void
+  }
+  class TurnManager <<planned>> {
+    -currentTurn: Turn
+    +startTurn(): void
+    +endTurn(): void
+    +nextTurn(): Turn
+  }
+  class Turn <<planned>> {
+    -number: int
+    -activePlayer: Player
+    +begin(): void
+    +finish(): void
+    +isActive(): boolean
+  }
+  class PlayerController <<planned>> {
+    -player: Player
+    +submit(command: InputCommand): ActionResult
+    +selectUnit(id: int): Unit
+  }
+  abstract class InputCommand <<planned>> {
+    +execute(state: GameState): ActionResult
+    +undo(state: GameState): void
+  }
+  class CommandQueue <<planned>> {
+    -commands: Queue~InputCommand~
+    +enqueue(command: InputCommand): void
+    +dequeue(): InputCommand
+    +isEmpty(): boolean
+  }
+  class CommandValidator <<planned>> {
+    +validate(command: InputCommand, state: GameState): boolean
+  }
+  class ActionResult <<planned>> {
+    -success: boolean
+    -message: String
+    +isSuccess(): boolean
+    +getMessage(): String
+  }
+  class MoveAction <<planned>> {
+    -unit: Unit
+    -destination: Position
+    +execute(state: GameState): ActionResult
+  }
+  class AttackAction <<planned>> {
+    -attacker: Unit
+    -target: Damageable
+    +execute(state: GameState): ActionResult
+  }
+  class RecruitAction <<planned>> {
+    -player: Player
+    -unitType: UnitType
+    +execute(state: GameState): ActionResult
+  }
+  class BuildAction <<planned>> {
+    -player: Player
+    -buildingType: BuildingType
+    -position: Position
+    +execute(state: GameState): ActionResult
+  }
+  class ResourceAction <<planned>> {
+    -player: Player
+    -amount: int
+    +execute(state: GameState): ActionResult
+  }
+}
+
+package "Planned Map and Movement" <<planned>> {
+  class Position <<planned>> {
+    -x: int
+    -y: int
+    +distanceTo(other: Position): int
+    +equals(other: Position): boolean
+  }
+  class Tile <<planned>> {
+    -position: Position
+    -terrain: Terrain
+    -occupied: boolean
+    +isWalkable(): boolean
+    +setOccupied(value: boolean): void
+  }
+  class Map <<planned>> {
+    -tiles: List~Tile~
+    -width: int
+    -height: int
+    +getTile(position: Position): Tile
+    +addTile(tile: Tile): void
+  }
+  class MapGenerator <<planned>> {
+    +generate(width: int, height: int): Map
+    +randomTerrain(): Terrain
+  }
+  enum Terrain <<planned>> {
+    PLAINS
+    FOREST
+    MOUNTAIN
+    WATER
+  }
+  class PathFinder <<planned>> {
+    +findPath(map: Map, from: Position, to: Position): List~Position~
+  }
+  class MovementSystem <<planned>> {
+    +move(unit: Unit, destination: Position): ActionResult
+    +canMove(unit: Unit, destination: Position): boolean
+  }
+  class VisibilitySystem <<planned>> {
+    +update(player: Player, map: Map): void
+    +isVisible(player: Player, position: Position): boolean
+  }
+  class FogOfWar <<planned>> {
+    -hiddenTiles: Set~Tile~
+    +reveal(position: Position): void
+    +hide(position: Position): void
+  }
+}
+
+package "Planned Factories and Stats" <<planned>> {
+  class UnitFactory <<planned>> {
+    +create(type: UnitType, id: int): Unit
+    +createStats(type: UnitType): UnitStats
+  }
+  class BuildingFactory <<planned>> {
+    +create(type: BuildingType, id: int): Buildings
+  }
+  enum UnitType <<planned>> {
+    ARCHER
+    KNIGHT
+    CAVALRY
+    LEGIONARY
+    BERSERKER
+    CHARIOT
+  }
+  enum BuildingType <<planned>> {
+    BARRACKS
+    GOLD_MINE
+  }
+  class UnitStats <<planned>> {
+    -maxHealth: int
+    -baseDamage: int
+    -movementPoints: int
+    +getMaxHealth(): int
+    +getBaseDamage(): int
+  }
+  class ArmorComponent <<planned>> {
+    -armorValue: int
+    +reduceDamage(damage: int): int
+    +getArmorValue(): int
+  }
+  class HealthComponent <<planned>> {
+    -current: int
+    -maximum: int
+    +applyDamage(damage: int): void
+    +heal(amount: int): void
+    +isDead(): boolean
+  }
+}
+
+package "Planned Items and Effects" <<planned>> {
+  abstract class Weapon <<planned>> {
+    -name: String
+    -damageBonus: int
+    +getDamageBonus(): int
+    +getType(): WeaponType
+  }
+  enum WeaponType <<planned>> {
+    SWORD
+    BOW
+    AXE
+    SPEAR
+  }
+  class Inventory <<planned>> {
+    -items: List~Item~
+    +add(item: Item): void
+    +remove(item: Item): boolean
+    +find(name: String): Item
+  }
+  abstract class Item <<planned>> {
+    -name: String
+    -value: int
+    +getName(): String
+    +getValue(): int
+  }
+  class Consumable <<planned>> {
+    -effect: StatusEffect
+    +use(target: Unit): void
+  }
+  enum EquipmentSlot <<planned>> {
+    MAIN_HAND
+    OFF_HAND
+    ARMOR
+  }
+  abstract class StatusEffect <<planned>> {
+    -duration: int
+    +apply(target: Unit): void
+    +expire(target: Unit): void
+  }
+  class Buff <<planned>> {
+    +apply(target: Unit): void
+  }
+  class Debuff <<planned>> {
+    +apply(target: Unit): void
+  }
+  class EffectManager <<planned>> {
+    -effects: List~StatusEffect~
+    +apply(effect: StatusEffect, target: Unit): void
+    +update(): void
+    +remove(effect: StatusEffect): void
+  }
+  class Cooldown <<planned>> {
+    -duration: int
+    -remaining: int
+    +tick(): void
+    +isReady(): boolean
+    +reset(): void
+  }
+}
+
+package "Planned Abilities and Combat" <<planned>> {
+  class Skill <<planned>> {
+    -name: String
+    -cost: int
+    +canUse(unit: Unit): boolean
+    +use(unit: Unit): ActionResult
+  }
+  class Ability <<planned>> {
+    -cooldown: Cooldown
+    +use(source: Unit, target: Damageable): ActionResult
+  }
+  class AbilityManager <<planned>> {
+    -abilities: List~Ability~
+    +add(ability: Ability): void
+    +use(name: String, source: Unit, target: Damageable): ActionResult
+  }
+  class TargetingSystem <<planned>> {
+    +selectEnemy(source: Unit, units: List~Unit~): Unit
+    +inRange(source: Unit, target: Unit): boolean
+  }
+  class DamageCalculator <<planned>> {
+    +calculate(attacker: Unit, target: Damageable): int
+    +criticalHit(attacker: Unit): boolean
+  }
+  class DefenseCalculator <<planned>> {
+    +mitigate(target: Unit, damage: int): int
+    +getArmor(target: Unit): int
+  }
+  class CombatEvent <<planned>> {
+    -attacker: Unit
+    -target: Damageable
+    -damage: int
+    +getDamage(): int
+  }
+  class BattleLog <<planned>> {
+    -events: List~CombatEvent~
+    +record(event: CombatEvent): void
+    +getEvents(): List~CombatEvent~
+    +clear(): void
+  }
+}
+
+package "Planned Results and Persistence" <<planned>> {
+  class VictoryCondition <<planned>> {
+    +isMet(state: GameState): boolean
+    +getDescription(): String
+  }
+  class GameResult <<planned>> {
+    -winner: Player
+    -score: int
+    +getWinner(): Player
+    +getScore(): int
+  }
+  class Scoreboard <<planned>> {
+    -results: List~GameResult~
+    +record(result: GameResult): void
+    +getRankings(): List~Player~
+  }
+  class SaveGameService <<planned>> {
+    +save(state: GameState, path: String): void
+    +load(path: String): GameState
+  }
+}
+
+' Existing inheritance and interfaces
+Unit ..|> IMoveSet
+Unit ..|> Damageable
+Buildings ..|> Damageable
+Archer --|> Unit
+soldier --|> Unit
+Knight --|> Unit
+Legionary --|> Unit
+Berserker --|> Unit
+Cavalry --|> Unit
+Chariot --|> Unit
+Barracks --|> Buildings
+GoldMine --|> Buildings
+
+' Existing composition and associations
+Army "1" o-- "0..*" Unit : units
+Player "1" *-- "1" Army : owns
+Player "1" o-- "1" Civilization : selects
+Player "1" *-- "1" Barracks : owns
+Battle "1" o-- "2" Army : battles
+Archer o-- Bow : equips
+soldier o-- Sword : equips
+Knight o-- Sword : equips
+Knight o-- Shield : equips
+Legionary o-- Sword : equips
+Legionary o-- Shield : equips
+Berserker o-- Axe : equips
+Cavalry o-- Horse : has
+Chariot o-- Spear : equips
+Barracks ..> Player : recruits for
+CombatSystem ..> Unit : attacks
+CombatSystem ..> Damageable : damages
+CombatSystem ..> Chariot : charges
+CombatSystem ..> Army : winner
+Practice ..> Player
+Practice ..> Army
+Practice ..> Archer
+Practice ..> soldier
+Practice ..> Chariot
+
+' Planned game flow
+GameEngine *-- GameState
+GameEngine *-- GameSession
+GameEngine o-- GameConfig
+GameEngine ..> TurnManager
+GameEngine ..> CommandQueue
+GameEngine ..> VictoryCondition
+GameSession o-- PlayerController
+GameSession o-- Map
+GameSession o-- Scoreboard
+TurnManager *-- Turn
+TurnManager ..> PlayerController
+PlayerController ..> CommandQueue
+CommandQueue o-- InputCommand
+CommandValidator ..> InputCommand
+CommandValidator ..> GameState
+InputCommand <|-- MoveAction
+InputCommand <|-- AttackAction
+InputCommand <|-- RecruitAction
+InputCommand <|-- BuildAction
+InputCommand <|-- ResourceAction
+MoveAction ..> MovementSystem
+AttackAction ..> CombatSystem
+RecruitAction ..> Barracks
+BuildAction ..> BuildingFactory
+ResourceAction ..> Player
+InputCommand ..> ActionResult
+
+' Planned map and movement
+Map *-- "1..*" Tile
+Tile o-- Position
+Tile o-- Terrain
+MapGenerator ..> Map
+MapGenerator ..> Terrain
+PathFinder ..> Map
+PathFinder ..> Position
+MovementSystem ..> PathFinder
+MovementSystem ..> Unit
+MovementSystem ..> Position
+VisibilitySystem ..> Map
+VisibilitySystem ..> Position
+FogOfWar *-- VisibilitySystem
+FogOfWar ..> Player
+
+' Planned factories and stats
+UnitFactory ..> UnitType
+UnitFactory ..> Unit
+UnitFactory ..> UnitStats
+BuildingFactory ..> BuildingType
+BuildingFactory ..> Buildings
+Unit *-- UnitStats
+UnitStats o-- ArmorComponent
+UnitStats o-- HealthComponent
+ArmorComponent ..> Damageable
+HealthComponent ..> Damageable
+
+' Planned items and effects
+Inventory *-- "0..*" Item
+Item <|-- Weapon
+Item <|-- Consumable
+Weapon o-- WeaponType
+Inventory ..> EquipmentSlot
+Unit o-- Inventory
+Consumable ..> EffectManager
+EffectManager o-- "0..*" StatusEffect
+StatusEffect <|-- Buff
+StatusEffect <|-- Debuff
+EffectManager ..> Unit
+Cooldown ..> Ability
+
+' Planned abilities and combat
+Skill <|-- Ability
+Ability *-- Cooldown
+AbilityManager *-- "0..*" Ability
+AbilityManager ..> Unit
+TargetingSystem ..> Position
+TargetingSystem ..> Unit
+DamageCalculator ..> Unit
+DamageCalculator ..> Weapon
+DamageCalculator ..> StatusEffect
+DefenseCalculator ..> Unit
+DefenseCalculator ..> ArmorComponent
+CombatSystem ..> DamageCalculator
+CombatSystem ..> DefenseCalculator
+CombatSystem *-- BattleLog
+BattleLog o-- "0..*" CombatEvent
+CombatEvent ..> Unit
+CombatEvent ..> Damageable
+Unit o-- AbilityManager
+
+' Planned results and persistence
+VictoryCondition ..> GameState
+VictoryCondition ..> Army
+GameResult o-- VictoryCondition
+GameResult ..> Player
+Scoreboard o-- "0..*" GameResult
+SaveGameService ..> GameState
+SaveGameService ..> GameSession
+
+note right of GoldMine
+Existing source issue:
+GoldMine currently lacks a constructor
+for Buildings, so the Java project does
+not fully compile yet.
+end note
+
+@enduml

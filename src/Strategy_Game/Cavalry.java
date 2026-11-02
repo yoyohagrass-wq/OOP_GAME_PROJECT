@@ -19,7 +19,7 @@ public class Cavalry extends Unit {
     }
     @Override
     public int CalcDamage() {
-        return getDamage() + SSowrd.DamageBonus;
+        return getDamage();
     }
     // Getter
     public Horse getHorse() {
@@ -27,6 +27,6 @@ public class Cavalry extends Unit {
     }
     @Override
     public void attack() {
-        System.out.println("Soldier attacks with " + CalcDamage() + " damage!");
+        System.out.println("Cavalry attacks with " + CalcDamage() + " damage!");
     }
 }

@@ -1,0 +1,285 @@
+@startuml Strategy_Game_Class_Diagram
+
+title Strategy Game - UML Class Diagram
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam packageStyle rectangle
+
+interface IMoveSet {
+  +attack(): void
+}
+
+interface Damageable {
+  +takeDamage(damage: int): void
+  +getHealth(): int
+  +isDestroyed(): boolean
+}
+
+abstract class Unit {
+  -Health: int
+  -Damage: int
+  -id: int
+  -maxHealth: int
+  +Unit(Health: int, Damage: int, id: int)
+  +setHealth(Health: int): void
+  +getHealth(): int
+  +getMaxHealth(): int
+  +setDamage(Damage: int): void
+  +getDamage(): int
+  +setId(id: int): void
+  +getId(): int
+  +CalcDamage(): int
+  +takeDamage(damage: int): void
+  +isDestroyed(): boolean
+}
+
+abstract class Buildings {
+  -buildingID: int
+  -health: int
+  -maxHealth: int
+  +Buildings(buildingID: int, maxHealth: int)
+  +getBuildingID(): int
+  +getHealth(): int
+  +getMaxHealth(): int
+  +takeDamage(damage: int): void
+  +isDestroyed(): boolean
+}
+
+class Archer {
+  -Range: int
+  +BowNArrow: Bow
+  +Archer(Health: int, Damage: int, id: int, Range: int)
+  +setBow(NewBow: Bow): void
+  +setRange(Range: int): void
+  +getRange(): int
+  +CalcDamage(): int
+  +attack(): void
+}
+
+class soldier {
+  -Armor: int
+  +SSowrd: Sword
+  +soldier(Health: int, Damage: int, id: int, Armor: int)
+  +setArmor(Armor: int): void
+  +getArmor(): int
+  +CalcDamage(): int
+  +attack(): void
+}
+
+class Knight {
+  -Armor: int
+  +SSowrd: Sword
+  +Shield: Shield
+  +Knight(Health: int, Damage: int, id: int, Armor: int)
+  +setArmor(Armor: int): void
+  +getArmor(): int
+  +CalcDamage(): int
+  +CalcArmor(): int
+  +takeDamage(damage: int): void
+  +attack(): void
+}
+
+class Legionary {
+  -Armor: int
+  -sword: Sword
+  -shield: Shield
+  +Legionary(Health: int, Damage: int, id: int, Armor: int)
+  +setArmor(Armor: int): void
+  +getArmor(): int
+  +getSword(): Sword
+  +getShield(): Shield
+  +CalcDamage(): int
+  +CalcArmor(): int
+  +takeDamage(damage: int): void
+  +attack(): void
+}
+
+class Berserker {
+  -axe: Axe
+  +Berserker(Health: int, Damage: int, id: int)
+  +getAxe(): Axe
+  +CalcDamage(): int
+  +attack(): void
+}
+
+class Cavalry {
+  -horse: Horse
+  +Cavalry(Health: int, Damage: int, id: int)
+  +getHorse(): Horse
+  +CalcDamage(): int
+  +attack(): void
+}
+
+class Chariot {
+  -spear: Spear
+  -chargeBonus: int
+  -chargeAvailable: boolean
+  +Chariot(Health: int, Damage: int, id: int, chargeBonus: int)
+  +getSpear(): Spear
+  +CalcDamage(): int
+  +CalcChargeDamage(): int
+  +chargeAttack(): int
+  +resetCharge(): void
+  +attack(): void
+}
+
+class Sword {
+  -SwordName: String
+  -DamageBonus: int
+  +Sword(SwordName: String, DamageBonus: int)
+  +getDamageBonus(): int
+  +getSwordName(): String
+}
+
+class Bow {
+  -Bowname: String
+  -DamageBonus: int
+  +Bow(BowName: String, DamageBonus: int)
+  +getDamageBonus(): int
+  +getBowname(): String
+}
+
+class Axe {
+  -AxeName: String
+  -DamageBonus: int
+  +Axe(AxeName: String, DamageBonus: int)
+  +getDamageBonus(): int
+  +getAxeName(): String
+}
+
+class Spear {
+  -SpearName: String
+  -DamageBonus: int
+  +Spear(SpearName: String, DamageBonus: int)
+  +getDamageBonus(): int
+  +getSpearName(): String
+}
+
+class Shield {
+  +ShieldName: String
+  +ArmorBonus: int
+  +Shield(ShieldName: String, ArmorBonus: int)
+  +getArmorBonus(): int
+  +getShieldName(): String
+}
+
+class Horse {
+  -Speed: int
+  +Horse(Speed: int)
+  +setSpeed(Speed: int): void
+  +getSpeed(): int
+}
+
+class Army {
+  -units: ArrayList~Unit~
+  +Army()
+  +addUnit(unit: Unit): void
+  +getArmySize(): int
+  +removeUnit(unitType: Class): boolean
+  +getTotalDamage(): int
+  +isDefeated(): boolean
+  +getUnits(): ArrayList~Unit~
+}
+
+class Player {
+  -playerID: int
+  -Name: String
+  -Gold: int
+  -MyArmy: Army
+  -civilization: Civilization
+  -barracks: Barracks
+  +Player(playerID: int, Name: String, Gold: int, selectedCivilization: Civilization)
+  +getPlayerID(): int
+  +getName(): String
+  +setName(Name: String): void
+  +getArmy(): Army
+  +getBarracks(): Barracks
+  +getCivilization(): Civilization
+  +getGold(): int
+  +addGold(goldAmount: int): void
+  +spendGold(Amount: int): boolean
+}
+
+class Civilization {
+  -name: String
+  +Civilization(name: String)
+  +getName(): String
+}
+
+class Barracks {
+  +Barracks(buildingID: int)
+  +canRecruit(): boolean
+  +recruitUnit(player: Player, unitType: Class, unitID: int): boolean
+}
+
+class GoldMine {
+  ' No constructor is currently defined in the source.
+}
+
+class CombatSystem {
+  +performAttack(attacker: Unit, target: Damageable): void
+  +performChargeAttack(attacker: Chariot, target: Damageable): void
+  +getWinner(army1: Army, army2: Army): Army
+}
+
+class Battle {
+  -battleArmy1: Army
+  -battleArmy2: Army
+  -currentTurn: int
+  +Battle(battleArmy1: Army, battleArmy2: Army)
+  +getCurrentTurn(): int
+  +switchTurn(): void
+}
+
+class Practice {
+  +main(args: String[]): void
+}
+
+Unit ..|> IMoveSet
+Unit ..|> Damageable
+Buildings ..|> Damageable
+
+Archer --|> Unit
+soldier --|> Unit
+Knight --|> Unit
+Legionary --|> Unit
+Berserker --|> Unit
+Cavalry --|> Unit
+Chariot --|> Unit
+Barracks --|> Buildings
+GoldMine --|> Buildings
+
+Army "1" o-- "0..*" Unit : units
+Player "1" *-- "1" Army : owns
+Player "1" o-- "1" Civilization : selects
+Player "1" *-- "1" Barracks : owns
+Battle "1" o-- "2" Army : battles
+
+Archer "1" o-- "1" Bow : equips
+soldier "1" o-- "1" Sword : equips
+Knight "1" o-- "1" Sword : equips
+Knight "1" o-- "1" Shield : equips
+Legionary "1" o-- "1" Sword : equips
+Legionary "1" o-- "1" Shield : equips
+Berserker "1" o-- "1" Axe : equips
+Cavalry "1" o-- "1" Horse : has
+Chariot "1" o-- "1" Spear : equips
+
+Barracks ..> Player : recruits for
+CombatSystem ..> Unit : attacks
+CombatSystem ..> Damageable : damages
+CombatSystem ..> Chariot : charge attack
+CombatSystem ..> Army : determines winner
+Practice ..> Player
+Practice ..> Army
+Practice ..> Archer
+Practice ..> soldier
+Practice ..> Chariot
+
+note right of GoldMine
+  Current source issue:
+  Buildings has no no-argument constructor,
+  so GoldMine currently prevents full compilation.
+end note
+
+@enduml

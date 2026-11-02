@@ -1,0 +1,378 @@
+@startuml Strategy_Game_Simplified_Roadmap
+
+title Strategy Game - Simplified UML Roadmap
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam packageStyle rectangle
+skinparam nodesep 18
+skinparam ranksep 24
+
+legend right
+  <b>Existing</b>: currently present in the repository
+  <b>Planned</b>: simple target classes, not Java code yet
+  This roadmap intentionally avoids the 80-class requirement.
+endlegend
+
+package "Existing Military Core" {
+  interface IMoveSet {
+    +attack(): void
+  }
+  interface Damageable {
+    +takeDamage(damage: int): void
+    +getHealth(): int
+    +isDestroyed(): boolean
+  }
+  abstract class Unit {
+    -Health: int
+    -Damage: int
+    -id: int
+    -maxHealth: int
+    +getHealth(): int
+    +getMaxHealth(): int
+    +getDamage(): int
+    +CalcDamage(): int
+    +takeDamage(damage: int): void
+    +isDestroyed(): boolean
+  }
+  abstract class Buildings {
+    -buildingID: int
+    -health: int
+    -maxHealth: int
+    +getHealth(): int
+    +getMaxHealth(): int
+    +takeDamage(damage: int): void
+    +isDestroyed(): boolean
+  }
+  class Archer {
+    -range: int
+    -bow: Bow
+    +getRange(): int
+    +setRange(range: int): void
+    +CalcDamage(): int
+    +attack(): void
+  }
+  class Longbowman {
+    -range: int
+    -bow: Bow
+    +getRange(): int
+    +setRange(range: int): void
+    +getBow(): Bow
+    +CalcDamage(): int
+    +attack(): void
+  }
+  class Knight {
+    -armor: int
+    -sword: Sword
+    -shield: Shield
+    +CalcDamage(): int
+    +CalcArmor(): int
+    +takeDamage(damage: int): void
+    +attack(): void
+  }
+  class Legionary {
+    -armor: int
+    -sword: Sword
+    -shield: Shield
+    +CalcDamage(): int
+    +CalcArmor(): int
+    +takeDamage(damage: int): void
+    +attack(): void
+  }
+  class Berserker {
+    -axe: Axe
+    +CalcDamage(): int
+    +attack(): void
+  }
+  class Cavalry {
+    -horse: Horse
+    +getHorse(): Horse
+    +CalcDamage(): int
+    +attack(): void
+  }
+  class Chariot {
+    -spear: Spear
+    -chargeBonus: int
+    -chargeAvailable: boolean
+    +CalcDamage(): int
+    +CalcChargeDamage(): int
+    +chargeAttack(): int
+    +resetCharge(): void
+    +attack(): void
+  }
+}
+
+package "Existing Equipment" {
+  class Sword {
+    -swordName: String
+    -damageBonus: int
+    +getDamageBonus(): int
+    +getSwordName(): String
+  }
+  class Bow {
+    -bowName: String
+    -damageBonus: int
+    +getDamageBonus(): int
+    +getBowname(): String
+  }
+  class Axe {
+    -axeName: String
+    -damageBonus: int
+    +getDamageBonus(): int
+    +getAxeName(): String
+  }
+  class Spear {
+    -spearName: String
+    -damageBonus: int
+    +getDamageBonus(): int
+    +getSpearName(): String
+  }
+  class Shield {
+    -shieldName: String
+    -armorBonus: int
+    +getArmorBonus(): int
+    +getShieldName(): String
+  }
+  class Horse {
+    -speed: int
+    +setSpeed(speed: int): void
+    +getSpeed(): int
+  }
+}
+
+package "Existing Game Objects" {
+  class Army {
+    -units: ArrayList~Unit~
+    +addUnit(unit: Unit): void
+    +getArmySize(): int
+    +removeUnit(unitType: Class~? extends Unit~): boolean
+    +getTotalDamage(): int
+    +isDefeated(): boolean
+    +getUnits(): ArrayList~Unit~
+  }
+  class Player {
+    -playerID: int
+    -Name: String
+    -Gold: int
+    -MyArmy: Army
+    -civilization: Civilization
+    -barracks: Barracks
+    -goldMine: GoldMine
+    +getName(): String
+    +getArmy(): Army
+    +getBarracks(): Barracks
+    +getCivilization(): Civilization
+    +getGoldMine(): GoldMine
+    +getGold(): int
+    +addGold(amount: int): void
+    +spendGold(amount: int): boolean
+  }
+  class Civilization {
+    -name: String
+    +getName(): String
+  }
+  class Barracks {
+    +canRecruit(): boolean
+    +recruitUnit(player: Player, unitType: Class, unitID: int): boolean
+  }
+  class GoldMine {
+    -goldPerInterval: int
+    -productionInterval: long
+    -lastCollectionTime: long
+    +GoldMine(buildingID: int)
+    +collectGold(player: Player): void
+  }
+  class CombatSystem {
+    +performAttack(attacker: Unit, target: Damageable): void
+    +performChargeAttack(attacker: Chariot, target: Damageable): void
+    +getWinner(army1: Army, army2: Army): Army
+  }
+  class Battle {
+    -battleArmy1: Army
+    -battleArmy2: Army
+    -combatSystem: CombatSystem
+    -currentTurn: int
+    +getCurrentTurn(): int
+    +getCombatSystem(): CombatSystem
+    +switchTurn(): void
+    +executeTurn(): void
+    +takeTurn(attacker: Unit, target: Unit): boolean
+    +takeTurn(attacker: Chariot, target: Unit, charge: boolean): boolean
+    +getWinner(): Army
+  }
+  class Practice {
+    +main(args: String[]): void
+  }
+}
+
+package "Phase 2 Optional Features" <<phase2>> {
+  class DefenseTower <<planned>> {
+    -attackDamage: int
+    -attackRange: int
+    +canAttack(target: Unit): boolean
+    +attack(target: Unit): void
+  }
+  class TownHall <<planned>> {
+    -populationLimit: int
+    +increasePopulationLimit(amount: int): void
+    +canBuild(): boolean
+  }
+  class TradingSystem <<planned>> {
+    +transferGold(from: Player, to: Player, amount: int): boolean
+    +canTrade(player: Player): boolean
+  }
+}
+
+package "Planned Map" <<planned>> {
+  class GameMap <<planned>> {
+    -locations: List~Location~
+    +addLocation(location: Location): void
+    +getLocation(name: String): Location
+    +getLocations(): List~Location~
+  }
+  class Location <<planned>> {
+    -name: String
+    -description: String
+    +getName(): String
+    +getDescription(): String
+    +isAvailable(): boolean
+  }
+}
+
+package "Planned Game Management" <<planned>> {
+  class Game <<planned>> {
+    -players: List~Player~
+    -map: GameMap
+    -settings: GameSettings
+    +start(): void
+    +addPlayer(player: Player): void
+    +isOver(): boolean
+  }
+  class GameController <<planned>> {
+    -game: Game
+    +run(): void
+    +startBattle(army1: Army, army2: Army): Battle
+    +endGame(): void
+  }
+  class GameSettings <<planned>> {
+    -startingGold: int
+    -maxPlayers: int
+    +loadDefaults(): void
+    +validate(): boolean
+  }
+  class BattleResult <<planned>> {
+    -winner: Army
+    -turns: int
+    +getWinner(): Army
+    +getTurns(): int
+  }
+}
+
+package "Planned Console Interface" <<planned>> {
+  class InputHandler <<planned>> {
+    +readChoice(): int
+    +readText(): String
+    +readNumber(): int
+  }
+  class MainMenu <<planned>> {
+    +show(): void
+    +startNewGame(): void
+    +exit(): void
+  }
+  class BattleMenu <<planned>> {
+    +show(battle: Battle): void
+    +selectAction(): String
+  }
+  class RecruitmentMenu <<planned>> {
+    +show(player: Player): void
+    +recruit(unitType: Class): boolean
+  }
+}
+
+package "Planned Files and Reports" <<planned>> {
+  class SaveManager <<planned>> {
+    +saveGame(game: Game, path: String): void
+  }
+  class LoadManager <<planned>> {
+    +loadGame(path: String): Game
+  }
+  class PlayerReport <<planned>> {
+    +build(player: Player): String
+  }
+  class BattleReport <<planned>> {
+    +build(battle: Battle, result: BattleResult): String
+  }
+}
+
+' Existing inheritance and interfaces
+Unit ..|> IMoveSet
+Unit ..|> Damageable
+Buildings ..|> Damageable
+Archer --|> Unit
+Longbowman --|> Unit
+Knight --|> Unit
+Legionary --|> Unit
+Berserker --|> Unit
+Cavalry --|> Unit
+Chariot --|> Unit
+Barracks --|> Buildings
+GoldMine --|> Buildings
+
+' Existing ownership and equipment
+Player *-- Army
+Player *-- Barracks
+Player o-- Civilization
+Player *-- GoldMine
+Army o-- "0..*" Unit
+Archer *-- Bow
+Longbowman *-- Bow
+Knight *-- Sword
+Knight *-- Shield
+Legionary *-- Sword
+Legionary *-- Shield
+Berserker *-- Axe
+Cavalry *-- Horse
+Chariot *-- Spear
+
+' Planned buildings, economy, map, and combat
+DefenseTower --|> Buildings
+TownHall --|> Buildings
+TradingSystem ..> Player
+Game *-- GameSettings
+Game *-- GameMap
+Game o-- "2..*" Player
+GameController *-- Game
+GameController ..> Battle
+GameMap *-- "1..*" Location
+Battle *-- CombatSystem
+Battle o-- BattleResult
+DefenseTower ..> Unit
+TownHall ..> Player
+
+' Planned console and persistence
+MainMenu ..> GameController
+MainMenu ..> InputHandler
+BattleMenu ..> Battle
+BattleMenu ..> InputHandler
+RecruitmentMenu ..> Barracks
+RecruitmentMenu ..> InputHandler
+SaveManager ..> Game
+LoadManager ..> Game
+PlayerReport ..> Player
+BattleReport ..> Battle
+BattleReport ..> BattleResult
+
+note right of Unit
+  The source still contains soldier.java,
+  but it is excluded from the agreed roster:
+  Archer, Longbowman, Knight, Cavalry,
+  Legionary, Berserker, and Chariot.
+end note
+
+note right of GoldMine
+  Target design uses timestamp-based collection:
+  goldPerInterval, productionInterval,
+  lastCollectionTime, and collectGold(Player).
+end note
+
+@enduml

@@ -91,4 +91,14 @@ public abstract class Unit implements IMoveSet, Damageable {
     public boolean isDestroyed() {
         return this.Health == 0;
     }
+
+    // Used by LoadManager to restore a saved unit without changing normal gameplay rules.
+    void restoreState(int health, int damage) {
+        if (health >= 0 && health <= this.maxHealth) {
+            this.Health = health;
+        }
+        if (damage > 10 && damage <= 100) {
+            this.Damage = damage;
+        }
+    }
 }
