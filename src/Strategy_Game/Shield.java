@@ -9,8 +9,8 @@ package Strategy_Game;
  * @author yoyoh
  */
 public class Shield {
-    public String ShieldName;
-    public int ArmorBonus;
+    private String ShieldName;
+    private int ArmorBonus;
     
     public Shield(String ShieldName,int ArmorBonus){
         this.ArmorBonus = ArmorBonus;

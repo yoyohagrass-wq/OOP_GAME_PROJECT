@@ -1,14 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Strategy_Game;
 
-/**
- *
- * @author yoyoh
- */
 public class GoldMine extends Buildings {
+
     private final int goldPerInterval = 50;
     private final long productionInterval = 30000;
     private long lastCollectionTime;
@@ -17,7 +10,7 @@ public class GoldMine extends Buildings {
         super(buildingID, 300);
         this.lastCollectionTime = System.currentTimeMillis();
     }
-    
+
     public void collectGold(Player player) {
         if (player == null || isDestroyed()) {
             return;
@@ -25,9 +18,9 @@ public class GoldMine extends Buildings {
 
         long currentTime = System.currentTimeMillis();
         long elapsedTime = currentTime - lastCollectionTime;
+        long intervals = elapsedTime / productionInterval;
 
-        if (elapsedTime >= productionInterval) {
-            long intervals = elapsedTime / productionInterval;
+        if (intervals > 0) {
             player.addGold((int) (intervals * goldPerInterval));
             lastCollectionTime += intervals * productionInterval;
         }
