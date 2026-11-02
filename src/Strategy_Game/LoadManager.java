@@ -33,9 +33,16 @@ public final class LoadManager {
                     Integer.parseInt(playerData[3]),
                     new Civilization(playerData[4]));
 
-            // Older save files may not contain wins, so they load with zero wins.
-            if (playerData.length >= 6) {
-                player.restoreWins(Integer.parseInt(playerData[5]));
+            // Read the current counter format.
+            if (playerData.length >= 8) {
+                player.restoreCounters(
+                        Integer.parseInt(playerData[7]),
+                        Integer.parseInt(playerData[5]),
+                        Integer.parseInt(playerData[6]));
+            // Older save files only contained wins.
+            } else if (playerData.length >= 6) {
+                int oldWins = Integer.parseInt(playerData[5]);
+                player.restoreCounters(oldWins, oldWins, 0);
             }
 
             while (scanner.hasNextLine()) {

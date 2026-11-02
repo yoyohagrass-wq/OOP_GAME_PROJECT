@@ -14,7 +14,7 @@ public class Player {
     private final int playerID;
     private String Name;
     private int Gold;
-    private int wins;
+    private final CounterSystem counterSystem;
     private final Army MyArmy;
     private Civilization civilization;
     private final Barracks barracks;
@@ -24,12 +24,12 @@ public class Player {
     public Player(int playerID, String Name, int Gold, Civilization selectedCivilization) {
         this.Name = Name;
         this.Gold = Gold;
-        this.wins = 0;
         this.playerID = playerID;
         this.MyArmy = new Army();
         this.civilization = selectedCivilization;
         this.barracks = new Barracks(playerID);
         this.goldMine = new GoldMine(playerID);
+        this.counterSystem = new CounterSystem();
     }
 
     // Player ID Getter
@@ -71,20 +71,37 @@ public class Player {
         return this.Gold;
     }
 
-    // Win counter
+    public CounterSystem getCounterSystem() {
+        return this.counterSystem;
+    }
+
     public int getWins() {
-        return this.wins;
+        return this.counterSystem.getWins();
     }
 
     public void recordWin() {
-        this.wins++;
+        this.counterSystem.recordWin();
+    }
+
+    public int getLosses() {
+        return this.counterSystem.getLosses();
+    }
+
+    public int getGamesPlayed() {
+        return this.counterSystem.getGamesPlayed();
+    }
+
+    public double getWinRate() {
+        return this.counterSystem.getWinRate();
+    }
+
+    public void recordLoss() {
+        this.counterSystem.recordLoss();
     }
 
     // Used by LoadManager when restoring a saved player.
-    void restoreWins(int wins) {
-        if (wins >= 0) {
-            this.wins = wins;
-        }
+    void restoreCounters(int gamesPlayed, int wins, int losses) {
+        this.counterSystem.restore(gamesPlayed, wins, losses);
     }
 
     // Add Gold

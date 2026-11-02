@@ -26,7 +26,9 @@ public final class SaveManager {
                     + clean(player.getName()) + SEPARATOR
                     + player.getGold() + SEPARATOR
                     + clean(player.getCivilization().getName()) + SEPARATOR
-                    + player.getWins());
+                    + player.getWins() + SEPARATOR
+                    + player.getLosses() + SEPARATOR
+                    + player.getGamesPlayed());
 
             for (Unit unit : player.getArmy().getUnits()) {
                 writer.println("UNIT" + SEPARATOR
